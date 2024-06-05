@@ -16,6 +16,10 @@ class CreateBlog(BaseModel):
         return values
 
 
+class UpdateBlog(CreateBlog):
+    pass
+
+
 class ShowBlog(BaseModel):
     title: str
     content: Optional[str] = None
