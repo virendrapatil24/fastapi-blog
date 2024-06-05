@@ -9,5 +9,3 @@ def test_create_user(client):
         "username": "testuser",
         "is_active": True,
     }
-
-    return
