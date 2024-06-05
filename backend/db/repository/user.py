@@ -1,5 +1,5 @@
 from core.hashing import Hasher
-from db.models.user import User
+from db.base import User
 from schemas.user import UserCreate
 from sqlalchemy.orm import Session
 

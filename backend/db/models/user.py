@@ -11,4 +11,4 @@ class User(Base):
     email = Column(String(255), unique=True, index=True, nullable=False)
     password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
-    # blogs = relationship("Blog", back_populates="author")
+    blogs = relationship("Blog", back_populates="author")
