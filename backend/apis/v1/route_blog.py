@@ -1,5 +1,7 @@
 from typing import List
 
+from apis.v1.route_login import get_current_user
+from db.models.user import User
 from db.repository.blog import (
     create_new_blog,
     delete_blog_by_id,
@@ -50,19 +52,27 @@ def get_all_blogs(db: Session = Depends(get_db)):
 
 
 @router.put("/{id}", response_model=ShowBlog)
-def update_blog(id: int, blog: UpdateBlog, db: Session = Depends(get_db)):
-    blog = update_blog_by_id(id=id, db=db, blog=blog)
-    if not blog:
+def update_blog(
+    id: int,
+    blog: UpdateBlog,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    blog = update_blog_by_id(id=id, db=db, blog=blog, author_id=current_user.id)
+    if isinstance(blog, dict):
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Blog with id {id} not found",
+            status_code=status.HTTP_400_BAD_REQUEST, detail=blog.get("error")
         )
     return blog
 
 
 @router.delete("/{id}")
-def delete_blog(id: int, db: Session = Depends(get_db)):
-    message = delete_blog_by_id(id=id, db=db)
+def delete_blog(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    message = delete_blog_by_id(id=id, db=db, author_id=current_user.id)
     if message.get("error"):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=message.get("error")

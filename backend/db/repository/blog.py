@@ -24,10 +24,12 @@ def retrieve_all_blogs(db: Session) -> Blog:
     return db.query(Blog).filter(Blog.is_active == True).all()
 
 
-def update_blog_by_id(id: int, blog: UpdateBlog, db: Session) -> Blog:
+def update_blog_by_id(id: int, blog: UpdateBlog, db: Session, author_id: int) -> Blog:
     blog_to_update = db.query(Blog).filter(Blog.id == id).first()
     if not blog_to_update:
-        return
+        return {"error": "Blog not found"}
+    if not blog_to_update.author_id == author_id:
+        return {"error": "You are not authorized to update this blog"}
     blog_to_update.title = blog.title
     blog_to_update.content = blog.content
     db.add(blog_to_update)
@@ -36,10 +38,12 @@ def update_blog_by_id(id: int, blog: UpdateBlog, db: Session) -> Blog:
     return blog_to_update
 
 
-def delete_blog_by_id(id: int, db: Session) -> Blog:
+def delete_blog_by_id(id: int, db: Session, author_id: int) -> Blog:
     blog_to_delete = db.query(Blog).filter(Blog.id == id).first()
     if not blog_to_delete:
         return {"error": "Blog not found"}
+    if not blog_to_delete.author_id == author_id:
+        return {"error": "You are not authorized to delete this blog"}
     blog_to_delete.is_active = False
     db.add(blog_to_delete)
     db.commit()
